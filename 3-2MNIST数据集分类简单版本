@@ -1,15 +1,19 @@
 
 # coding: utf-8
 
+# In[2]:
 
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
+
+
+# In[3]:
 
 #载入数据集
 mnist = input_data.read_data_sets("MNIST_data",one_hot=True)
 
 #每个批次的大小
-batch_size = 50
+batch_size = 100
 #计算一共有多少个批次
 n_batch = mnist.train.num_examples // batch_size
 
@@ -18,9 +22,9 @@ x = tf.placeholder(tf.float32,[None,784])
 y = tf.placeholder(tf.float32,[None,10])
 
 #创建一个简单的神经网络
-W = tf.Variable(tf.zeros([784,10])) # 定义权值  10 代表10个隐藏层
-b = tf.Variable(tf.zeros([10])) # 定义偏置值 
-prediction = tf.nn.softmax(tf.matmul(x,W)+b) 
+W = tf.Variable(tf.zeros([784,10])) # 10是隐藏神经元的个数
+b = tf.Variable(tf.zeros([10])) 
+prediction = tf.nn.softmax(tf.matmul(x,W)+b)
 
 #二次代价函数
 loss = tf.reduce_mean(tf.square(y-prediction))
@@ -28,24 +32,22 @@ loss = tf.reduce_mean(tf.square(y-prediction))
 train_step = tf.train.GradientDescentOptimizer(0.2).minimize(loss)
 
 #初始化变量
-init = tf.global_variables_initializer() 
+init = tf.global_variables_initializer()
 
-#结果存放在一个布尔型列表中
+#结果存放在一个布尔型列表中 (tr.equal比较两个值是否一样，如果一样返回Ture，否则返回False;tf,argmax求最大的概率是在第几个位置)
 correct_prediction = tf.equal(tf.argmax(y,1),tf.argmax(prediction,1))#argmax返回一维张量中最大的值所在的位置
-#求准确率
+#求准确率（tf.cast 把对比后的结果格式转化一下，把布尔型转化为浮点型）
 accuracy = tf.reduce_mean(tf.cast(correct_prediction,tf.float32))
 
 with tf.Session() as sess:
     sess.run(init)
-    for epoch in range(21): 
-        for batch in range(n_batch):
-            batch_xs,batch_ys =  mnist.train.next_batch(batch_size)
-            sess.run(train_step,feed_dict={x:batch_xs,y:batch_ys}) # 知道所有的训练集训练完
+    for epoch in range(100): # 迭代的周期
+        for batch in range(n_batch): #每个批次的循环进行循环
+            batch_xs,batch_ys =  mnist.train.next_batch(batch_size) # 获得batch_size数量的图片然后进行训练  图片的标签保存至batch_xs和batch_ys里面 
+            sess.run(train_step,feed_dict={x:batch_xs,y:batch_ys}) # 训练 用一个字典的形式进行输入 
         
         acc = sess.run(accuracy,feed_dict={x:mnist.test.images,y:mnist.test.labels})
         print("Iter " + str(epoch) + ",Testing Accuracy " + str(acc))
 
 
-
-
-
+# In[ ]:
