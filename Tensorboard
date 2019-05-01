@@ -1,32 +1,19 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed May  1 21:07:07 2019
+Created on Wed May  1 21:42:00 2019
 
 @author: Administrator
 """
 
 import tensorflow as tf
 
-input1 = tf.constant([1.0, 2.0, 3.0])
-input2 = tf.Variable(tf.random_normal([3]))
-output = tf.add_n([input1, input2])
+input1 = tf.constant([1.0, 2.0, 3.0], name ='input1')
+input2 = tf.Variable(tf.random_normal([3]), name = 'input2')
+output = tf.add_n([input1, input2],name= 'add')
 
-writer = tf.summary.FileWriter("/path/to/log", tf.get_default_graph())
-writer.close
+writer = tf.summary.FileWriter("C:/tensorboard", tf.get_default_graph())
+writer.close()
 
-tensorboard --logdir=/path/to/log
+# 切换到anaconda下， activate learn 运行
+tensorboard --logdir=C:/tensorboard
 
-import tensorflow as tf
-
-with tf.name_scope('graph') as scope:
-     matrix1 = tf.constant([[3., 3.]],name ='matrix1')  #1 row by 2 column
-     matrix2 = tf.constant([[2.],[2.]],name ='matrix2') # 2 row by 1 column
-     product = tf.matmul(matrix1, matrix2,name='product')
-  
-sess = tf.Session()
-
-writer = tf.summary.FileWriter("logs/", sess.graph)
-
-init = tf.global_variables_initializer()
-
-sess.run(init)
